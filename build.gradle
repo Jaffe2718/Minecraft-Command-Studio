@@ -101,16 +101,16 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.archives_base_name}"}
     }
-    from {                          // add all the javafx jars dependencies into the mod jar
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
-        exclude("META-INF/substrate/config/reflectionconfig.json")
-        configurations.compileClasspath.findAll() {
-            it.name.contains("javafx") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
+//    from {                          // add all the javafx jars dependencies into the mod jar
+//        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
+//        exclude("META-INF/substrate/config/reflectionconfig.json")
+//        configurations.compileClasspath.findAll() {
+//            it.name.contains("javafx") && it.name.endsWith(".jar")
+//        }.collect {
+//            zipTree(it)
+//        }
+//    }
     from {                         // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("flowless") && it.name.endsWith(".jar")
