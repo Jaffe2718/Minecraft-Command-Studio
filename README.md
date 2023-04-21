@@ -18,13 +18,12 @@ Please download the [Fabric API](https://modrinth.com/mod/fabric-api) and [Mod M
 Then, download the mod from the [release page](https://github.com/Jaffe2718/Minecraft-Command-Studio/releases) and put it in the `mods` folder.
 
 ## Usage
-<<<<<<< HEAD
 When the user presses the key `I` in the game world, a GUI will appear that allows you to write and execute commands.
 The GUI is developed by [JavaFX](https://openjfx.io/), used to be an IDE for Minecraft commands.
 You can use the IDE to write commands, execute commands, and debug commands.
 
 ## Help Me
-1. About OpenAI Issues
+### 1. About OpenAI Issues
 In my country or region, OpenAI Services are not available, so I can't test the AI code generation and ChatGPT assistance functions.
 My idea is that only when the user presses the combination key `Alt+F3`, the request will be sent to OpenAI to obtain the code step gun function. At present, this function only has the code that cannot be implemented to send a request to OpenAI.
 This method is at `github.jaffe2718.mccs.jfx.unit.widget.PopupFactory` interface, named `createAIPopup(String content)`, which is not completed yet.
@@ -35,18 +34,18 @@ For the OpenAI API Key, of course, it is provided by the user. In the `github.ja
 The AI pop-up window will be bound to the specified `CodeArea` through the `addAISuggestionsTo(CodeArea target)` method of the `github.jaffe2718.mccs.jfx.unit.prompt.AISuggestionsRegister` class.
 If you can help me to complete this function, I will be very grateful.
 
-2. About ChatGPT Issues
+### 2. About ChatGPT Issues
 And there is a ChatGPT assistance window problem. In the src/main/resources/assets/mccs/jfx/studio-view.fxml, you can see that the functions here are not implemented, because I can't use OpenAI's services.
 So, if anyone can help me to develop and test these functions, I will be very grateful.
 
-3. About Command Suggestions Issues
+### 3. About Command Suggestions Issues
 The principle of command suggestions is to instantiate a Minecraft ChatScreen, then enter the command on this ChatScreen, and set the current screen to this ChatScreen, then get the command prompt of this ChatScreen.
 After getting the command prompt, set the current screen to the original screen, and then return the command prompt as a list. But now this function seems to be a bit sensitive, sometimes the command prompt will not come out. Can anyone help me fix this problem?
 
-4. About Minecraft Version Support Issues
+### 4. About Minecraft Version Support Issues
 Due to my limited time, only Minecraft 1.19.4 version is currently supported. If anyone is willing to help me support more Minecraft versions, I will be very grateful.
 
-5. Please help me by sending pull request to me
+### 5. Please help me by sending pull request to me
 Please make sure that your pull request code can run, and the compiled mod can run normally in the game.
 If you reference the third-party libraries of Java and these libraries are not mods, remember to add your dependencies in the `build.gradle` file, and add the configuration to compile these libraries in the `jar` task. Otherwise, when compiling into a mod jar file, the game will crash due to the lack of dependent libraries in the game.
 When you send a pull request to me, remember to add your name in the `authors` field in the `fabric.mod.json` file.
