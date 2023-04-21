@@ -1,0 +1,36 @@
+{
+    "schemaVersion": 1,
+    "id": "mccs",
+    "version": "${version}",
+    "name": "Minecraft Command Studio",
+    "description": "A module that can better edit and debug Minecraft command",
+    "authors": [
+        "Jaffe2718"
+    ],
+    "contact": {
+        "website": "https://github.com/Jaffe2718",
+        "repo": "https://github.com/Jaffe2718/Minecraft-Command-Studio"
+    },
+    "license": "LGPL-3.0",
+    "icon": "assets/mccs/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "github.jaffe2718.mccs.client.MinecraftCommandStudioClient"
+        ],
+        "main": [
+            "github.jaffe2718.mccs.MinecraftCommandStudio"
+        ]
+    },
+    "mixins": [
+        "mccs.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "fabric": "*",
+        "midnightlib": ">=1.2.1",
+        "modmenu": ">=6.0.0",
+        "minecraft": "${minecraft_version}"
+    },
+    "jars": []
+}

@@ -1,0 +1,12 @@
+.keyword {
+    -fx-fill: #8700bd;
+    -fx-font-weight: bold;
+}
+
+.number {
+    -fx-fill: #007bff;
+}
+
+.punctuation {
+    -fx-fill: #d24300;
+}

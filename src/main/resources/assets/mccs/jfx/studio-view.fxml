@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.fxmisc.richtext.*?>
+
+<BorderPane fx:id="root" prefHeight="516.0" prefWidth="850.0" style="-fx-background-color: #F1F3F9;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="github.jaffe2718.mccs.jfx.MccsController">
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+   <right>
+       <TabPane fx:id="rightTabPane" onMouseClicked="#getRightTabPaneOnClicked" prefHeight="339.0" prefWidth="250.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+           <Tab fx:id="chatGPTTab" text="ChatGPT">
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <VBox fx:id="chatGPTVBox" layoutX="21.0" layoutY="92.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ToolBar prefHeight="23.0" prefWidth="221.0">
+                          <items>
+                            <Button mnemonicParsing="false" text="Clear" />
+                              <ChoiceBox prefHeight="23.0" prefWidth="158.0" />
+                          </items>
+                        </ToolBar>
+                        <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
+                        <HBox prefHeight="23.0" prefWidth="221.0">
+                           <children>
+                              <TextField prefHeight="23.0" prefWidth="177.0" />
+                              <Button mnemonicParsing="false" text="Sent" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children></AnchorPane>
+           </Tab>
+       </TabPane>
+   </right>
+   <bottom>
+       <VBox fx:id="bottomVBox" prefHeight="123.0" prefWidth="850.0" BorderPane.alignment="CENTER">
+           <ToolBar fx:id="outToolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="0.0" prefWidth="850.0">
+               <Button fx:id="buttonHideShow" mnemonicParsing="false" onMouseClicked="#onMouseClickedButtonHideShow" prefHeight="13.0" prefWidth="54.0" text="Hide" textAlignment="CENTER" />
+           </ToolBar>
+         <CodeArea fx:id="outLogCodeArea" autoHeight="true" editable="false" prefHeight="117.0" prefWidth="850.0" />
+       </VBox>
+   </bottom>
+   <left>
+       <TabPane fx:id="leftTabPane" onMouseClicked="#getLeftTabPaneOnClicked" prefHeight="339.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+           <Tab fx:id="fileExplorerTab" text="File Explorer">
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="339.0" prefWidth="403.0">
+                   <TreeView fx:id="fileTreeView" layoutX="-1.0" layoutY="4.0" onMouseClicked="#getOnMouseClickFileTreeView" prefHeight="330.0" prefWidth="171.0" style="-fx-border-width: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <contextMenu>
+                            <ContextMenu fx:id="fileTreeContextMenu">
+                                 <items>
+                                     <MenuItem fx:id="openMenuItem" mnemonicParsing="false" onAction="#getOnOpenMenuItemAction" text="Open" />
+                                     <Menu fx:id="newMenu" text="New...">
+                                         <MenuItem fx:id="newFileMenuItem" mnemonicParsing="false" onAction="#getOnNewFileMenuItemAction" text="New File" />
+                                         <MenuItem fx:id="newDirectoryMenuItem" mnemonicParsing="false" onAction="#getOnNewDirectoryItemAction" text="New Directory" />
+                                     </Menu>
+                                     <Menu fx:id="refactorMenu" text="Refactor">
+                                         <MenuItem fx:id="renameMenuItem" mnemonicParsing="false" onAction="#getOnRenameMenuItemAction" text="Rename" />
+                                         <MenuItem fx:id="copyToMenuItem" mnemonicParsing="false" onAction="#getOnCopyToMenuItemAction" text="Copy to" />
+                                         <MenuItem fx:id="moveToMenuItem" mnemonicParsing="false" onAction="#getOnMoveToMenuItemAction" text="Move to" />
+                                     </Menu>
+                                     <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false" onAction="#getOnDeleteMenuItemAction" text="Delete" />
+                                     <MenuItem fx:id="openInExplorerMenuItem" mnemonicParsing="false" onAction="#getOpenInExplorerMenuItemAction" text="Open in Explorer" />
+                                 </items>
+                            </ContextMenu>
+                          </contextMenu>
+                   </TreeView>
+               </AnchorPane>
+           </Tab>
+       </TabPane>
+   </left>
+   <top>
+       <VBox prefHeight="54.0" prefWidth="850.0" BorderPane.alignment="CENTER">
+           <MenuBar fx:id="mainMenuBar" prefHeight="0.0" prefWidth="850.0">
+               <Menu mnemonicParsing="false" text="File">
+                   <Menu mnemonicParsing="false" text="New...">
+                       <MenuItem mnemonicParsing="false" onAction="#getOnMainNewFileAction" text="New File" />
+                       <MenuItem mnemonicParsing="false" onAction="#getOnMainNewDirAction" text="New Directory" />
+                   </Menu>
+                   <SeparatorMenuItem />
+                   <MenuItem mnemonicParsing="false" onAction="#getOnMainOpenAction" text="Open" />
+                   <MenuItem mnemonicParsing="false" onAction="#getOnMainSaveAction" text="Save" />
+                   <MenuItem mnemonicParsing="false" onAction="#getOnMainSaveAsAction" text="Save As" />
+                   <MenuItem mnemonicParsing="false" onAction="#getOnMainCloseAction" text="Close" />
+                   <MenuItem mnemonicParsing="false" onAction="#getOnMainExitAction" text="Exit" />
+               </Menu>
+               <Menu mnemonicParsing="false" text="Edit">
+                   <MenuItem mnemonicParsing="false" onAction="#editSelectAll" text="Select All" />
+                   <SeparatorMenuItem />
+                   <MenuItem mnemonicParsing="false" onAction="#editCopy" text="Copy" />
+                   <MenuItem mnemonicParsing="false" onAction="#editCut" text="Cut" />
+                   <MenuItem mnemonicParsing="false" onAction="#editPaste" text="Paste" />
+                   <SeparatorMenuItem />
+                   <MenuItem mnemonicParsing="false" onAction="#editFind" text="Find" />
+                   <MenuItem mnemonicParsing="false" onAction="#editReplace" text="Replace" />
+                   <SeparatorMenuItem />
+                   <MenuItem mnemonicParsing="false" onAction="#editUndo" text="Undo" />
+                   <MenuItem mnemonicParsing="false" onAction="#editRedo" text="Redo" />
+               </Menu>
+               <Menu mnemonicParsing="false" text="Help">
+                   <MenuItem mnemonicParsing="false" text="About" />
+               </Menu>
+           </MenuBar>
+           <ToolBar fx:id="topToolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="47.0" prefWidth="850.0" style="-fx-background-color: #F0F0F0;">
+               <Button fx:id="runButton" mnemonicParsing="false" onAction="#getRunButtonOnAction" prefHeight="14.0" prefWidth="37.0" style="-fx-background-color: #F0F0F0;" />
+               <ComboBox fx:id="runModeComboBox" prefHeight="17.0" prefWidth="123.0" style="-fx-background-color: #F0F0F0;" />
+           </ToolBar>
+       </VBox>
+   </top>
+   <center>
+       <TabPane fx:id="codeTabPane" prefHeight="339.0" prefWidth="441.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER">
+              <Tab id="Start" text="Start">
+                <AnchorPane>
+               <children>
+                  <TextFlow prefHeight="415.0" prefWidth="408.0" style="-fx-border-width: 2; -fx-padding: 10;">
+                     <children>
+                        <Text fill="#0084ff" strokeType="OUTSIDE" strokeWidth="0.0" text="    Start with Minecraft Command Studio (MCCS)" wrappingWidth="393.2734375">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </TextFlow>
+               </children></AnchorPane>
+              </Tab>
+       </TabPane>
+   </center>
+</BorderPane>

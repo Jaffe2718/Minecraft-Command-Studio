@@ -1,0 +1,9 @@
+{
+    "mccs.midnightconfig.title": "Minecraft Command Studio Config",
+    "mccs.midnightconfig.openaiApiKey": "OpenAI API Key",
+    "mccs.midnightconfig.openaiApiKey.tooltip": "The API key for OpenAI, which is used to generate commands. You can get one at https://beta.openai.com/",
+    "mccs.midnightconfig.scriptInterval": "Command Running Interval (milliseconds)",
+    "mccs.midnightconfig.scriptInterval.tooltip": "The interval between each command execution. The lower the value, the more commands will be executed per second.",
+    "mccs.midnightconfig.alwaysOnTop": "Always on Top",
+    "mccs.midnightconfig.alwaysOnTop.tooltip": "Whether the window should always be on top of other windows."
+}
