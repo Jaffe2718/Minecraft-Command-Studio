@@ -2,7 +2,7 @@
 ![Stars](https://img.shields.io/github/stars/Jaffe2718/Minecraft-Command-Studio?style=flat-square)
 ![Forks](https://img.shields.io/github/forks/Jaffe2718/Minecraft-Command-Studio?style=flat-square)
 ![Issues](https://img.shields.io/github/issues/Jaffe2718/Minecraft-Command-Studio?style=flat-square)
-![License](https://img.shields.io/github/license/Jaffe2718/Minecraft-Command-Studio?style=flat-square)
+![Licence](https://img.shields.io/github/license/Jaffe2718/Minecraft-Command-Studio?style=flat-square)
 
 by Jaffe2718
 
@@ -18,6 +18,7 @@ Please download the [Fabric API](https://modrinth.com/mod/fabric-api) and [Mod M
 Then, download the mod from the [release page](https://github.com/Jaffe2718/Minecraft-Command-Studio/releases) and put it in the `mods` folder.
 
 ## Usage
+<<<<<<< HEAD
 When the user presses the key `I` in the game world, a GUI will appear that allows you to write and execute commands.
 The GUI is developed by [JavaFX](https://openjfx.io/), used to be an IDE for Minecraft commands.
 You can use the IDE to write commands, execute commands, and debug commands.
@@ -50,3 +51,6 @@ Please make sure that your pull request code can run, and the compiled mod can r
 If you reference the third-party libraries of Java and these libraries are not mods, remember to add your dependencies in the `build.gradle` file, and add the configuration to compile these libraries in the `jar` task. Otherwise, when compiling into a mod jar file, the game will crash due to the lack of dependent libraries in the game.
 When you send a pull request to me, remember to add your name in the `authors` field in the `fabric.mod.json` file.
 Pull request is welcome, and I will be very grateful.
+=======
+Download the mod from the [release page](
+>>>>>>> origin/main
