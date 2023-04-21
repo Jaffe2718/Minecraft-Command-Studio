@@ -51,6 +51,4 @@ Please make sure that your pull request code can run, and the compiled mod can r
 If you reference the third-party libraries of Java and these libraries are not mods, remember to add your dependencies in the `build.gradle` file, and add the configuration to compile these libraries in the `jar` task. Otherwise, when compiling into a mod jar file, the game will crash due to the lack of dependent libraries in the game.
 When you send a pull request to me, remember to add your name in the `authors` field in the `fabric.mod.json` file.
 Pull request is welcome, and I will be very grateful.
-=======
-Download the mod from the [release page](
->>>>>>> origin/main
+
