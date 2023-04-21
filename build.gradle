@@ -88,7 +88,7 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.archives_base_name}"}
     }
-    from {
+    from {                          // add all the javafx jars dependencies into the mod jar
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
         exclude("META-INF/substrate/config/reflectionconfig.json")
@@ -98,37 +98,44 @@ jar {
             zipTree(it)
         }
     }
-    from {
+    from {                         // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("flowless") && it.name.endsWith(".jar")
         }.collect {
             zipTree(it)
         }
     }
-    from {
+    from {                         // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("richtextfx") && it.name.endsWith(".jar")
         }.collect {
             zipTree(it)
         }
     }
-    from {
+    from {                         // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("undo") && it.name.endsWith(".jar")
         }.collect {
             zipTree(it)
         }
     }
-    from {
+    from {                         // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("wellbehaved") && it.name.endsWith(".jar")
         }.collect {
             zipTree(it)
         }
     }
-    from {
+    from {                        // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("reactfx") && it.name.endsWith(".jar")
+        }.collect {
+            zipTree(it)
+        }
+    }
+    from {                        // add all the openai api dependencies into the mod jar
+        configurations.compileClasspath.findAll() {
+            it.name.contains("theokanning") && it.name.endsWith(".jar")
         }.collect {
             zipTree(it)
         }

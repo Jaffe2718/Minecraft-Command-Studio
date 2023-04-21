@@ -65,7 +65,7 @@ public interface AlertFactory {
         if (target.getAlertType() != Alert.AlertType.ERROR) {
             return;
         }
-        String errorMessage = e.getMessage();
+        String errorMessage = e.getMessage() + "\r\n";
         for (StackTraceElement stackTraceElement : e.getStackTrace()) {
             errorMessage += "\t" + stackTraceElement.toString() + "\r\n";
         }
