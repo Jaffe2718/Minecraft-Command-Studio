@@ -5,6 +5,7 @@ import github.jaffe2718.mccs.jfx.unit.CmdExecutor;
 import github.jaffe2718.mccs.jfx.unit.font.MessageLogHighlighter;
 import github.jaffe2718.mccs.jfx.unit.font.MinecraftSyntaxHighlighter;
 import github.jaffe2718.mccs.jfx.unit.PathNodeItem;
+import github.jaffe2718.mccs.jfx.unit.prompt.AISuggestionsRegister;
 import github.jaffe2718.mccs.jfx.unit.prompt.CommandPromptRegister;
 import github.jaffe2718.mccs.jfx.unit.widget.AlertFactory;
 import github.jaffe2718.mccs.jfx.unit.widget.CodeEditContextMenu;
@@ -149,7 +150,8 @@ public class MccsController implements Initializable {
                     cmdCodeArea.setContextMenu(new CodeEditContextMenu(cmdCodeArea));            // add context menu
                     MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);             // apply syntax highlighter
                     cmdCodeArea.replaceText(0, 0, readFileToString(currentPathNode.getFile().getAbsolutePath()));  // read file to code area
-                    CommandPromptRegister.addPromptTo(cmdCodeArea);                                // add command prompt
+                    CommandPromptRegister.addPromptTo(cmdCodeArea);                              // add command prompt
+                    AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);                       // add AI suggestions
                     AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
                     anchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
                     AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -349,6 +351,7 @@ public class MccsController implements Initializable {
             MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);             // apply syntax highlighter
             cmdCodeArea.replaceText(0, 0, readFileToString(currentPathNode.getFile().getAbsolutePath()));  // read file to code area
             CommandPromptRegister.addPromptTo(cmdCodeArea);
+            AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);
             AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
             anchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
             AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -400,6 +403,7 @@ public class MccsController implements Initializable {
                 cmdCodeArea.setContextMenu(new CodeEditContextMenu(cmdCodeArea));            // add context menu
                 MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);             // apply syntax highlighter
                 CommandPromptRegister.addPromptTo(cmdCodeArea);                              // add command prompt
+                AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);                       // add AI suggestions
                 AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
                 anchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
                 AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -736,6 +740,7 @@ public class MccsController implements Initializable {
         cmdCodeArea.setContextMenu(new CodeEditContextMenu(cmdCodeArea));                                // set the codearea's context menu
         MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);              // apply syntax highlighting to the codearea
         CommandPromptRegister.addPromptTo(cmdCodeArea);                               // add command prompt to the codearea
+        AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);                        // add AI suggestions to the codearea
         // create a new AnchorPane
         AnchorPane newAnchorPane = new AnchorPane(cmdCodeArea);                       // create a new anchorpane
         newAnchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
@@ -909,7 +914,8 @@ public class MccsController implements Initializable {
                 }
                 return;
             }
-            CommandPromptRegister.addPromptTo(cmdCodeArea);  // add the command prompt to the code area
+            CommandPromptRegister.addPromptTo(cmdCodeArea);           // add the command prompt to the code area
+            AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);    // add the AI suggestions to the code area
             AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
             AnchorPane.setTopAnchor(cmdCodeArea, 0.0);
             AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
