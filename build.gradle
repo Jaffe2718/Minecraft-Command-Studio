@@ -33,10 +33,18 @@ dependencies {
 
 
     // other dependencies
-    implementation "org.openjfx:javafx-base:${project.javafx_version}"
-    implementation "org.openjfx:javafx-controls:${project.javafx_version}"
-    implementation "org.openjfx:javafx-fxml:${project.javafx_version}"
-    implementation "org.openjfx:javafx-graphics:${project.javafx_version}"
+    include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:win")
+    include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:mac")
+    include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:linux")
+    include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:win")
+    include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:mac")
+    include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:linux")
+    include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:win")
+    include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:mac")
+    include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:linux")
+    include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:win")
+    include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:mac")
+    include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:linux")
     implementation "org.fxmisc.richtext:richtextfx:${project.richtextfx_version}"
     // openai
     implementation "com.theokanning.openai-gpt3-java:api:${project.openai_version}"
@@ -82,6 +90,11 @@ java {
 javafx {
     version = project.javafx_version
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.web']
+
+    // Don't include native binaries via the plugin,
+    // since it will only include those for the current OS.
+    // The full set of native libraries gets included in the dependecies block.
+    configuration = 'compileOnly'
 }
 
 jar {
@@ -133,13 +146,13 @@ jar {
             zipTree(it)
         }
     }
-    from {                        // add all the openai api dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.name.contains("theokanning") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
+//    from {                        // add all the openai api dependencies into the mod jar
+//        configurations.compileClasspath.findAll() {
+//            it.name.contains("openai") && it.name.endsWith(".jar")
+//        }.collect {
+//            zipTree(it)
+//        }
+//    }
 }
 
 // configure the maven publication
