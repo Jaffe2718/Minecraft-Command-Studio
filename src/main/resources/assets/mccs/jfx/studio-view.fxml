@@ -123,15 +123,29 @@
               <Tab id="Start" text="Start">
                 <AnchorPane>
                <children>
-                  <TextFlow prefHeight="415.0" prefWidth="408.0" style="-fx-border-width: 2; -fx-padding: 10;">
-                     <children>
-                        <Text fill="#0084ff" strokeType="OUTSIDE" strokeWidth="0.0" text="    Start with Minecraft Command Studio (MCCS)" wrappingWidth="393.2734375">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </Text>
-                     </children>
-                  </TextFlow>
+                  <Label layoutX="29.0" layoutY="155.0" text="Press Alt+F3 to obtain AI suggestions" textFill="#f60000">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="29.0" layoutY="14.0" text="Minecraft Command Studio (MCCS)" textFill="#0d00ff">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="141.0" layoutY="41.0" text="Start Guide" textFill="#0c7400">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="29.0" layoutY="76.0" prefHeight="35.0" prefWidth="291.0" text="Remember to enter the OpenAI API Key in the mod menu settings" textFill="#a100db" wrapText="true" />
+                  <Label layoutX="29.0" layoutY="120.0" prefHeight="21.0" prefWidth="325.0" text="You can also select AI model in the mod menu settings" textFill="#ce7100" wrapText="true" />
+                  <Button layoutX="320.0" layoutY="263.0" mnemonicParsing="false" onAction="#getOnMainNewFileAction" prefHeight="22.0" prefWidth="45.0" style="-fx-background-color: #E0E0E0;" text="Try" textAlignment="CENTER" textFill="#00AA55">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="29.0" layoutY="206.0" prefHeight="36.0" prefWidth="320.0" text="1.0.0-rc.3 : ChatGPT chat function has not been implemented yet! " textFill="#007798" wrapText="true" />
                </children></AnchorPane>
               </Tab>
        </TabPane>

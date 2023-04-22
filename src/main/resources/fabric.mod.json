@@ -8,8 +8,8 @@
         "Jaffe2718"
     ],
     "contact": {
-        "website": "https://github.com/Jaffe2718",
-        "repo": "https://github.com/Jaffe2718/Minecraft-Command-Studio",
+        "homepage": "https://github.com/Jaffe2718",
+        "sources": "https://github.com/Jaffe2718/Minecraft-Command-Studio",
         "issues": "https://github.com/Jaffe2718/Minecraft-Command-Studio/issues"
     },
     "license": "GPL-3.0",

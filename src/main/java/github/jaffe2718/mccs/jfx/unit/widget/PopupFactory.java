@@ -1,5 +1,9 @@
 package github.jaffe2718.mccs.jfx.unit.widget;
 
+import com.theokanning.openai.completion.CompletionChoice;
+import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.service.OpenAiService;
+import github.jaffe2718.mccs.config.MccsConfig;
 import github.jaffe2718.mccs.jfx.MccsApplication;
 import github.jaffe2718.mccs.jfx.unit.prompt.AISuggestionsRegister;
 import github.jaffe2718.mccs.jfx.unit.prompt.CommandPromptRegister;
@@ -14,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
+import net.minecraft.client.MinecraftClient;
 import org.fxmisc.richtext.CodeArea;
 
 import java.util.List;
@@ -25,6 +30,8 @@ import java.util.regex.Pattern;
  * This interface cannot to be instantiated
  * */
 public interface PopupFactory {
+
+    OpenAiService aiService = new OpenAiService(MccsConfig.openaiApiKey);
 
     /**
      * Create a find popup<br><br>
@@ -38,8 +45,6 @@ public interface PopupFactory {
     static Popup createFindPopup(){
         Popup findPopup = new Popup();
         GridPane gridPane = new GridPane();       // 2x2 grid
-//        gridPane.setHgap(10);
-//        gridPane.setVgap(10);
         Label regexLabel = new Label("Regex");
         regexLabel.setPrefWidth(80);
         TextField regexTextField = new TextField();
@@ -187,7 +192,7 @@ public interface PopupFactory {
         });
         HBox buttonBox = new HBox();
         buttonBox.getChildren().addAll(nextButton, replaceButton, replaceAllButton, exitButton);  // 200px
-        buttonBox.prefWidthProperty().bind(replacePopup.widthProperty().subtract(20));
+        buttonBox.prefWidthProperty().bind(gridPane.widthProperty().subtract(20));
         // set buttonBox: {-fx-alignment: center-right, -fx-spacing: 10px, -fx-padding: 0px 0px 0px 0px}
         buttonBox.setStyle("-fx-alignment: center-right; -fx-spacing: 10; -fx-padding: 10");
         gridPane.add(regexLabel, 0, 0);
@@ -195,7 +200,7 @@ public interface PopupFactory {
         gridPane.add(replaceLabel, 0, 1);
         gridPane.add(replaceTextField, 1, 1);
         gridPane.add(buttonBox, 1, 2);
-        gridPane.setPrefSize(300, 60);
+        gridPane.setPrefSize(350, 60);
         gridPane.setStyle("-fx-background-color: #E0E0E0");
         replacePopup.getContent().add(gridPane);
         return replacePopup;
@@ -320,6 +325,74 @@ public interface PopupFactory {
             AISuggestionsRegister.isShowing = false;
         });
         VBox vBox = new VBox();
+        vBox.setPrefWidth(250);
+        vBox.setUserData(0);          // selected index
+        // TODO: get the prompt from OpenAI API and add the prompt to the vBox
+        if (!content.startsWith("/")) {
+            content = "/" + content;
+        }
+        CompletionRequest completionRequest = CompletionRequest.builder()
+                                                .prompt("Help me complete this Minecraft command: `" + content + "`")
+                                                .n(MccsConfig.aiMaxSuggestions)
+                                                .model(MccsConfig.aiModel.name)
+                                                .echo(true)
+                                                .user(MinecraftClient.getInstance().player.getName().getString())
+                                                .build();
+        for (CompletionChoice choice : aiService.createCompletion(completionRequest).getChoices()) {
+            Label aiLabel = new Label(choice.getText());
+            aiLabel.setOnMouseClicked(event -> {
+                // get current tab in the codeTabPane
+                TabPane codeTabPane = (TabPane) MccsApplication.stage.getScene().lookup("#codeTabPane");
+                CodeArea codeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel().getSelectedItem().getContent()).getChildren().get(0);
+                // insert the prompt into the cursor position
+                codeArea.insertText(codeArea.getCaretPosition(), aiLabel.getText());
+                aiPopup.hide();  // hide the promptPopup after the prompt is inserted into the codeArea
+                AISuggestionsRegister.isShowing = false;
+                event.consume();
+            });
+            aiLabel.setOnKeyPressed(
+                event -> {
+                    if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {   // enter or tab key pressed
+                        // get current tab in the codeTabPane
+                        TabPane codeTabPane = (TabPane) MccsApplication.stage.getScene().lookup("#codeTabPane");
+                        CodeArea codeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel().getSelectedItem().getContent()).getChildren().get(0);
+                        // insert the prompt into the cursor position
+                        codeArea.insertText(codeArea.getCaretPosition(), aiLabel.getText());
+                        aiPopup.hide();  // hide the promptPopup after the prompt is inserted into the codeArea
+                        AISuggestionsRegister.isShowing = false;
+                    }
+                    else if (event.getCode() == KeyCode.ESCAPE) {    // escape key pressed, hide the promptPopup
+                        aiPopup.hide();
+                        AISuggestionsRegister.isShowing = false;
+                    } else if (event.getCode() == KeyCode.UP) {
+                        vBox.setUserData((Integer) vBox.getUserData() - 1);
+                        if ((Integer) vBox.getUserData() < 0) {
+                            vBox.setUserData(0);
+                        }
+                    } else if (event.getCode() == KeyCode.DOWN) {
+                        vBox.setUserData((Integer) vBox.getUserData() + 1);
+                        if ((Integer) vBox.getUserData() >= vBox.getChildren().size()) {
+                            vBox.setUserData(vBox.getChildren().size() - 1);
+                        }
+                    }
+                    for (int i = 0; i < vBox.getChildren().size(); i++) {    // highlight the selected prompt
+                        Label label = (Label) vBox.getChildren().get(i);
+                        if (i == (Integer) vBox.getUserData()) {
+                            label.setTextFill(Color.color(0, 0.4, 0));
+                        } else {
+                            label.setTextFill(Color.color(0, 0, 0));
+                        }
+                    }
+                    event.consume();
+                }
+            );
+            vBox.getChildren().add(aiLabel);
+        }
+        // TODO: end
+        // highlight the first prompt (selected index is 0)
+        if (vBox.getChildren().size() > 0) {
+            ((Label) vBox.getChildren().get(0)).setTextFill(Color.color(0, 0.4, 0));
+        }
         vBox.setStyle("-fx-background-color: #E0E0E0");
 
         return aiPopup;

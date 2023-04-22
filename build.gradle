@@ -99,7 +99,7 @@ javafx {
 
 jar {
     // add the license file at the root of the jar
-    from("LICENSE") {
+    from('LICENSE') {
         rename {"${it}_${this.archivesBaseName}"}
     }
     from {                         // add all the javafx third party dependencies into the mod jar

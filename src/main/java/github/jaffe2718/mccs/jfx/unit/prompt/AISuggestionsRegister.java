@@ -1,5 +1,8 @@
 package github.jaffe2718.mccs.jfx.unit.prompt;
 
+import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.service.OpenAiService;
+import github.jaffe2718.mccs.config.MccsConfig;
 import github.jaffe2718.mccs.jfx.unit.widget.PopupFactory;
 import javafx.stage.Popup;
 import org.fxmisc.richtext.CodeArea;
@@ -32,8 +35,7 @@ public abstract class AISuggestionsRegister {
                 if (!isShowing && event.isAltDown() && event.getCode().toString().equals("F3")) {
                     // get the row of text that the cursor is on, from the start of the row to the cursor
                     String rowText = target.getText(target.getCurrentParagraph(), 0, target.getCurrentParagraph(), target.getCaretColumn());
-                    Popup aiPromptPopup = PopupFactory.createAIPopup(rowText);
-                    // show the popup at the cursor position
+                    Popup aiPromptPopup = PopupFactory.createAIPopup(rowText);      // create a popup to show the ai suggestions
                     target.getCaretBounds().ifPresent(
                         bounds -> {
                             AISuggestionsRegister.isShowing = true;
