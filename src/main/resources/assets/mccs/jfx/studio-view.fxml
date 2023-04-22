@@ -14,25 +14,33 @@
        <TabPane fx:id="rightTabPane" onMouseClicked="#getRightTabPaneOnClicked" prefHeight="339.0" prefWidth="250.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
            <Tab fx:id="chatGPTTab" text="ChatGPT">
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
-               <children>
-                  <VBox fx:id="chatGPTVBox" layoutX="21.0" layoutY="92.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <ToolBar prefHeight="23.0" prefWidth="221.0">
-                          <items>
-                            <Button mnemonicParsing="false" text="Clear" />
-                              <ChoiceBox prefHeight="23.0" prefWidth="158.0" />
-                          </items>
-                        </ToolBar>
-                        <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
-                        <HBox prefHeight="23.0" prefWidth="221.0">
+                   <children>
+                       <VBox fx:id="chatGPTVBox" layoutX="21.0" layoutY="92.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <TextField prefHeight="23.0" prefWidth="177.0" />
-                              <Button mnemonicParsing="false" text="Sent" />
+                               <ToolBar prefHeight="23.0" prefWidth="221.0">
+                                   <items>
+                                       <Button fx:id="chatClearButton" mnemonicParsing="false" text="Clear" />
+                                       <ChoiceBox fx:id="gptModelChoiceBox" prefHeight="23.0" prefWidth="158.0" />
+                                   </items>
+                               </ToolBar>
+                            <VBox fx:id="chatMsgVBox" prefHeight="223.0" prefWidth="221.0" VBox.vgrow="ALWAYS" />
+                                <HBox prefHeight="64.0" prefWidth="221.0" VBox.vgrow="SOMETIMES">
+                                    <children>
+                                        <TextArea fx:id="chatTextArea" prefHeight="38.0" prefWidth="178.0" HBox.hgrow="ALWAYS" />
+                                        <Button mnemonicParsing="false" prefHeight="64.0" prefWidth="47.0" text="Send" textAlignment="CENTER" />
+                                    </children>
+                                </HBox>
                            </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children></AnchorPane>
+                       </VBox>
+                   </children>
+               </AnchorPane>
+           </Tab>
+           <Tab text="Tools">
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                   <children>
+                      <VBox fx:id="toolsTabVBox" alignment="CENTER" layoutX="74.0" layoutY="91.0" prefHeight="200.0" prefWidth="100.0" style="-fx-spacing: 75;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                   </children>
+               </AnchorPane>
            </Tab>
        </TabPane>
    </right>
@@ -101,7 +109,7 @@
                    <MenuItem mnemonicParsing="false" onAction="#editRedo" text="Redo" />
                </Menu>
                <Menu mnemonicParsing="false" text="Help">
-                   <MenuItem mnemonicParsing="false" text="About" />
+                   <MenuItem mnemonicParsing="false" onAction="#onMainAboutAction" text="About" />
                </Menu>
            </MenuBar>
            <ToolBar fx:id="topToolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="47.0" prefWidth="850.0" style="-fx-background-color: #F0F0F0;">

@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -21,14 +22,13 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -39,6 +39,8 @@ import org.fxmisc.richtext.LineNumberFactory;
 
 import java.awt.*;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -70,12 +72,20 @@ public class MccsController implements Initializable {
     @FXML                   public MenuItem openInExplorerMenuItem;
     @FXML   public TabPane rightTabPane;
     @FXML       public Tab chatGPTTab;
-    @FXML           public VBox chatGPTVBox;
+    @FXML           public VBox chatGPTVBox;                             // Chat GPT Container
+    @FXML               public Button chatClearButton;                   // Clear the chat log and the chat input
+    @FXML               public ChoiceBox<String> gptModelChoiceBox;  // Select the GPT model
+    @FXML               public VBox chatMsgVBox;                         // Chat log, add new message in label format
+    @FXML               public TextArea chatTextArea;                    // Chat input
+
+    // @FXML      public Tab toolsTab;
+    @FXML           public VBox toolsTabVBox;
     @FXML   public TabPane codeTabPane;
     @FXML   public VBox bottomVBox;
     @FXML      public ToolBar outToolBar;
     @FXML           public Button buttonHideShow;
     @FXML      public CodeArea outLogCodeArea;
+
 
 
     /**
@@ -117,8 +127,71 @@ public class MccsController implements Initializable {
         runModeComboBox.getItems().addAll("Single Line", "Script", "Selection", "Loop", "Selection Loop");
         runModeComboBox.getSelectionModel().select(0);
 
-        //mcWikiWebView.getEngine().load("https://minecraft.fandom.com/wiki/Commands");
-        //mcWikiWebView.onMouseClickedProperty().set(e ->{});
+        this.initChatGPTTab();
+        this.initToolsTab();
+    }
+
+    /**
+     * Init the tools tab<br>
+     * Add the tools to the tab<br>
+     *  Minecraft Wiki<br>
+     *  Minecraft Official Website<br>
+     *  GamerGeeks<br>
+     * */
+    private void initToolsTab() {
+        Label toolsLabel = new Label("Tools");
+        toolsLabel.setPrefWidth(250);
+        toolsLabel.setStyle("-fx-text-fill: #00BFFF; -fx-font-weight: bold; -fx-font-size: 40px;");
+        toolsLabel.setAlignment(Pos.CENTER);
+        toolsLabel.setTextAlignment(TextAlignment.CENTER);
+        Button mcNetButton = new Button("Minecraft Official Website");
+        mcNetButton.setPrefWidth(250);
+        mcNetButton.setGraphic(new ImageView("assets/mccs/jfx/textures/mc_net.png"));
+        mcNetButton.setGraphicTextGap(10);
+        mcNetButton.setAlignment(Pos.CENTER_LEFT);
+        mcNetButton.setTextAlignment(TextAlignment.RIGHT);
+        mcNetButton.setContentDisplay(ContentDisplay.LEFT);
+        mcNetButton.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://www.minecraft.net/"));
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        });
+        Button mcWikiButton = new Button("Minecraft Wiki");
+        mcWikiButton.setPrefWidth(250);
+        mcWikiButton.setGraphic(new ImageView("assets/mccs/jfx/textures/mc_wiki.png"));
+        mcWikiButton.setGraphicTextGap(10);
+        mcWikiButton.setAlignment(Pos.CENTER_LEFT);
+        mcWikiButton.setTextAlignment(TextAlignment.RIGHT);
+        mcWikiButton.setContentDisplay(ContentDisplay.LEFT);
+        mcWikiButton.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://minecraft.fandom.com/wiki/Minecraft_Wiki"));
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        });
+        Button gamerGeeksButton = new Button("GAMEGEAKS");
+        gamerGeeksButton.setPrefWidth(250);
+        gamerGeeksButton.setGraphic(new ImageView("assets/mccs/jfx/textures/gamergeeks.png"));
+        gamerGeeksButton.setGraphicTextGap(10);
+        gamerGeeksButton.setAlignment(Pos.CENTER_LEFT);
+        gamerGeeksButton.setTextAlignment(TextAlignment.RIGHT);
+        gamerGeeksButton.setContentDisplay(ContentDisplay.LEFT);
+        gamerGeeksButton.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://www.gamergeeks.net/apps/minecraft"));
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        });
+        toolsTabVBox.getChildren().addAll(toolsLabel, mcNetButton, mcWikiButton, gamerGeeksButton);
+    }
+
+    private void initChatGPTTab() {
+        this.gptModelChoiceBox.getItems().addAll("GPT-3", "GPT-3.5-turbo", "GPT-4");
+        this.gptModelChoiceBox.getSelectionModel().select(0);
     }
 
     /**
@@ -1190,6 +1263,48 @@ public class MccsController implements Initializable {
         if (cmdCodeArea != null) {
             cmdCodeArea.redo();
         }
+        event.consume();
+    }
+
+    public void onMainAboutAction(ActionEvent event) {
+        Alert aboutAlert = AlertFactory.createAlert(Alert.AlertType.INFORMATION,
+                "Minecraft Command Studio", "About Minecraft Command Studio", """
+                        Mod Name: Minecraft Command Studio\r
+                        Author: Jaffe2718\r
+                        License: GNU General Public License v3.0\r
+                        """);
+        HBox aboutHBox = new HBox();         // add a HBox to the alert
+        aboutHBox.setSpacing(20);
+        aboutHBox.setAlignment(Pos.CENTER);
+        // add buttons with icon to the HBox      |GitHub| |Bilibili|
+        Button githubButton = new Button();
+        githubButton.setGraphic(new ImageView(new Image("assets/mccs/jfx/textures/github.png")));
+        githubButton.setStyle("-fx-background-color: #F4F4F4");
+        githubButton.setOnAction(    // open the GitHub repository when the button is clicked
+            event1 -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://github.com/Jaffe2718/Minecraft-Command-Studio"));
+                    } catch (IOException | URISyntaxException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+        );
+        Button bilibiliButton = new Button();
+        bilibiliButton.setGraphic(new ImageView(new Image("assets/mccs/jfx/textures/bilibili.png")));
+        bilibiliButton.setStyle("-fx-background-color: #F4F4F4");
+        bilibiliButton.setOnAction(  // open the Bilibili page when the button is clicked
+            event1 -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://space.bilibili.com/1671742926"));
+                    } catch (IOException | URISyntaxException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+        );
+        aboutHBox.getChildren().addAll(githubButton, bilibiliButton);
+        aboutAlert.getDialogPane().setExpandableContent(aboutHBox);
+        aboutAlert.getDialogPane().setExpanded(true);                // auto expand the alert
+        aboutAlert.showAndWait();
         event.consume();
     }
 }
