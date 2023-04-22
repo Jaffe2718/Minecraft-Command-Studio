@@ -47,7 +47,7 @@ dependencies {
     include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:linux")
     implementation "org.fxmisc.richtext:richtextfx:${project.richtextfx_version}"
     // openai
-    implementation "com.theokanning.openai-gpt3-java:api:${project.openai_version}"
+    implementation "com.theokanning.openai-gpt3-java:service:${project.openai_version}"
     }
 
 processResources {
@@ -98,19 +98,10 @@ javafx {
 }
 
 jar {
+    // add the license file at the root of the jar
     from("LICENSE") {
-        rename { "${it}_${project.archives_base_name}"}
+        rename {"${it}_${this.archivesBaseName}"}
     }
-//    from {                          // add all the javafx jars dependencies into the mod jar
-//        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-//        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
-//        exclude("META-INF/substrate/config/reflectionconfig.json")
-//        configurations.compileClasspath.findAll() {
-//            it.name.contains("javafx") && it.name.endsWith(".jar")
-//        }.collect {
-//            zipTree(it)
-//        }
-//    }
     from {                         // add all the javafx third party dependencies into the mod jar
         configurations.compileClasspath.findAll() {
             it.name.contains("flowless") && it.name.endsWith(".jar")
@@ -146,13 +137,13 @@ jar {
             zipTree(it)
         }
     }
-//    from {                        // add all the openai api dependencies into the mod jar
-//        configurations.compileClasspath.findAll() {
-//            it.name.contains("openai") && it.name.endsWith(".jar")
-//        }.collect {
-//            zipTree(it)
-//        }
-//    }
+    from {                        // add all the openai api dependencies into the mod jar
+        configurations.compileClasspath.findAll() {
+            it.properties.toString().contains("openai") && it.name.endsWith(".jar")
+        }.collect {
+            zipTree(it)
+        }
+    }
 }
 
 // configure the maven publication
