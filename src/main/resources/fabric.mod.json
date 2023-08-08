@@ -29,8 +29,8 @@
     "depends": {
         "fabricloader": ">=${loader_version}",
         "fabric": "*",
-        "midnightlib": ">=1.2.1",
-        "modmenu": ">=6.0.0",
+        "midnightlib": ">=1.4.0",
+        "modmenu": ">=7.0.0",
         "minecraft": "${minecraft_version}"
     },
     "jars": []
