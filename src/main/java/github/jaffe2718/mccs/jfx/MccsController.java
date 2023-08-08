@@ -53,8 +53,6 @@ import java.util.ResourceBundle;
  * */
 public class MccsController implements Initializable {
 
-    private PrintStream out;
-
     /**
      * the popup of find
      * */

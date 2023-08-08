@@ -35,9 +35,7 @@ public abstract class MinecraftSyntaxHighlighter {
      * @param codeArea the CodeArea to be highlighted
      * */
     public static void applySyntaxHighlighting(@NotNull CodeArea codeArea) {
-        codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            codeArea.setStyleSpans(0, computeHighlighting(newText));
-        });
+        codeArea.textProperty().addListener((obs, oldText, newText) -> codeArea.setStyleSpans(0, computeHighlighting(newText)));
         codeArea.getStylesheets().add(Objects.requireNonNull(
                 MinecraftSyntaxHighlighter.class.getResource("/assets/mccs/jfx/css/minecraft-command.css")).toExternalForm());
     }

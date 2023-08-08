@@ -83,7 +83,7 @@ public abstract class EventHandler {
      * if it is not empty, switch the screen to get the command.
      */
     private static void onStartClientTick(MinecraftClient client) {
-        if (client.player != null && !lastCommand.equals("")) {
+        if (client.player != null && !lastCommand.isEmpty()) {
             ChatScreen chatScreen = new ChatScreen("");
             Screen currentScreen = client.currentScreen;
             client.setScreen(chatScreen);
