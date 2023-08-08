@@ -8,6 +8,7 @@ import github.jaffe2718.mccs.jfx.unit.widget.PopupFactory;
 import github.jaffe2718.mccs.mixin.ChatInputSuggestorMixin;
 import javafx.stage.Popup;
 import org.fxmisc.richtext.CodeArea;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,16 @@ import java.util.regex.Pattern;
  * */
 public interface CommandPromptRegister {
 
+    /**
+     * The pattern of the last word of the row text
+     * */
     Pattern LAST_EXPRESSION_PATTERN = Pattern.compile("[^/ \\n]*[\\da-zA-Z]+$");
 
     /**
      * Add a command prompt to the codeArea
+     * @param target the codeArea to add the command prompt
      * */
-    static void addPromptTo(CodeArea target) {
+    static void addPromptTo(@NotNull CodeArea target) {
         target.textProperty().addListener(
             (obs, oldText, newText)-> {
                 if (newText.length() < oldText.length()) {       // if the text is deleted, then hide the popup
@@ -36,16 +41,13 @@ public interface CommandPromptRegister {
                 int row = target.getCurrentParagraph();
                 String rowText = target.getText(row, 0, row, target.getCaretColumn());
                 // if the row text ends with a space, then the user is not typing a command
-                System.out.println("rowText: " + rowText);
-                if (rowText.endsWith(" ") || rowText.endsWith("\n") ||rowText.length()==0) {
+                if (rowText.endsWith(" ") || rowText.endsWith("\n") || rowText.isEmpty()) {
                     return;
                 }
                 List<String> suggestions = getCommandSuggestions(rowText);  // get the command suggestions
-//                System.out.println("suggestions: " + suggestions);
-//                System.out.println("suggestions.size(): " + suggestions.size());
                 // if there are suggestions and last word is not in suggestions, then show the popup
                 Matcher matcher = LAST_EXPRESSION_PATTERN.matcher(rowText);
-                if (suggestions.size() != 0 && !suggestions.contains(matcher.matches() ? matcher.group() : "")) {
+                if (!suggestions.isEmpty() && !suggestions.contains(matcher.matches() ? matcher.group() : "")) {
                     // if suggestions is too long, only show the first 10
                     if (suggestions.size() > 10) {
                         suggestions = suggestions.subList(0, 10);

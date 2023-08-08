@@ -18,7 +18,7 @@ public class MinecraftCommandStudioClient implements ClientModInitializer {
     /**
      * When the player press the key I in the game world, the JavaFX UI will show up.<br>
      * */
-    public static final KeyBinding iKey = new KeyBinding("key.mccs.ide", GLFW.GLFW_KEY_I, KeyBinding.GAMEPLAY_CATEGORY);
+    public static final KeyBinding iKey = new KeyBinding("mccs.key.ide", GLFW.GLFW_KEY_I, KeyBinding.GAMEPLAY_CATEGORY);
 
     /**
      * This method is used to register the key binding and the event handler.<br>

@@ -19,6 +19,11 @@ import java.util.concurrent.CompletableFuture;
  * */
 @Mixin(ChatInputSuggestor.class)
 public interface ChatInputSuggestorMixin {
+
+    /**
+     * Get the pendingSuggestions field of ChatInputSuggestor
+     * @return the pendingSuggestions field of ChatInputSuggestor
+     * */
     @Accessor
     CompletableFuture<Suggestions> getPendingSuggestions();
 }

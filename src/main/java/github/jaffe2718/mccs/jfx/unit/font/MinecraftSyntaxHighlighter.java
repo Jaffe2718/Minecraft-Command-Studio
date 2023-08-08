@@ -3,6 +3,7 @@ package github.jaffe2718.mccs.jfx.unit.font;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +30,11 @@ public abstract class MinecraftSyntaxHighlighter {
             + "|(?<PUNCTUATION>" + PUNCTUATION_PATTERN + ")"
     );
 
-    public static void applySyntaxHighlighting(CodeArea codeArea) {
+    /**
+     * Add the highlighter to the target CodeArea
+     * @param codeArea the CodeArea to be highlighted
+     * */
+    public static void applySyntaxHighlighting(@NotNull CodeArea codeArea) {
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
             codeArea.setStyleSpans(0, computeHighlighting(newText));
         });

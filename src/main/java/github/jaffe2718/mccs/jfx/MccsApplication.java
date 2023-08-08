@@ -12,12 +12,21 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * run this application in minecraft*/
 public class MccsApplication extends Application {
     private static final String FXML_PATH = "/assets/mccs/jfx/studio-view.fxml";
+
+    /**
+     * mod icon path
+     * */
     public static final String ICON_PATH = "assets/mccs/icon.png";
+
+    /**
+     * JavaFX stage of mccs IDE
+     * */
     public static Stage stage;
 
 
@@ -32,6 +41,21 @@ public class MccsApplication extends Application {
         }
     };
 
+    /**
+     * The main entry point for all JavaFX applications.
+     * The start method is called after the init method has returned,
+     * and after the system is ready for the application to begin running.
+     *
+     * <p>
+     * NOTE: This method is called on the JavaFX Application Thread.
+     * </p>
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws IOException if something goes wrong
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         // System.out.println(this.getClass().getResource(FXML_PATH));
@@ -48,6 +72,9 @@ public class MccsApplication extends Application {
         stage.setTitle("Minecraft Command Studio");
     }
 
+    /**
+     * initialize the mccs IDE
+     * */
     public static void initialization() {
         launch();
     }

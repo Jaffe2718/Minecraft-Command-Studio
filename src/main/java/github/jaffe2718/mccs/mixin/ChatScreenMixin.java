@@ -21,9 +21,18 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * */
 @Mixin(ChatScreen.class)
 public interface ChatScreenMixin {
+
+    /**
+     * Get the chatInputSuggestor field of ChatScreen
+     * @return the chatInputSuggestor field of ChatScreen
+     * */
     @Accessor
     ChatInputSuggestor getChatInputSuggestor();
 
+    /**
+     * Get the chatField field of ChatScreen
+     * @return the chatField field of ChatScreen
+     * */
     @Accessor
     TextFieldWidget getChatField();
 

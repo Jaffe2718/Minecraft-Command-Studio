@@ -17,6 +17,10 @@ public class MinecraftCommandStudio implements ModInitializer {
      * The mod ID of Minecraft Command Studio.<br>
      * */
     public static final String MOD_ID = "mccs";
+
+    /**
+     * The logger of Minecraft Command Studio.<br>
+     * */
     public static Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     /**
@@ -31,6 +35,7 @@ public class MinecraftCommandStudio implements ModInitializer {
 
     @Override
     public void onInitialize() {
+
         LOGGER.info("Minecraft Command Studio is initializing!");
         MidnightConfig.init(MOD_ID, MccsConfig.class);
         uiFxThread.start();

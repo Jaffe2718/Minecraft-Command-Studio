@@ -30,25 +30,36 @@ dependencies {
     // other mods
     modApi("com.terraformersmc:modmenu:${modmenu_version}") { exclude(module: "fabric-api") }
     modImplementation "maven.modrinth:midnightlib:${midnightlib_version}"
+    implementation "org.fxmisc.richtext:richtextfx:${project.richtextfx_version}"
 
 
     // other dependencies
-    include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:win")
-    include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:mac")
-    include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:linux")
-    include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:win")
-    include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:mac")
-    include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:linux")
-    include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:win")
-    include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:mac")
-    include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:linux")
-    include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:win")
-    include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:mac")
-    include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:linux")
-    implementation "org.fxmisc.richtext:richtextfx:${project.richtextfx_version}"
-    // openai
-    implementation "com.theokanning.openai-gpt3-java:service:${project.openai_version}"
+    // different os use different javafx binaries
+    if (System.properties['os.name'].toLowerCase().contains('win')) {  // windows
+        include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:win")
+        include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:win")
+        include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:win")
+        include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:win")
     }
+    else if (System.properties['os.name'].toLowerCase().contains('mac')) {  // mac
+        include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:mac")
+        include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:mac")
+        include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:mac")
+        include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:mac")
+    }
+    else if (System.properties['os.name'].toLowerCase().contains('linux')) { // linux
+        include runtimeOnly("org.openjfx:javafx-base:${project.javafx_version}:linux")
+        include runtimeOnly("org.openjfx:javafx-controls:${project.javafx_version}:linux")
+        include runtimeOnly("org.openjfx:javafx-fxml:${project.javafx_version}:linux")
+        include runtimeOnly("org.openjfx:javafx-graphics:${project.javafx_version}:linux")
+    }
+
+    include runtimeOnly("org.fxmisc.flowless:flowless:${project.flowless_version}")
+    include runtimeOnly("org.fxmisc.richtext:richtextfx:${project.richtextfx_version}")
+    include runtimeOnly("org.fxmisc.undo:undofx:${project.undofx_version}")
+    include runtimeOnly("org.fxmisc.wellbehaved:wellbehavedfx:${project.wellbehavedfx_version}")
+    include runtimeOnly("org.reactfx:reactfx:${project.reactfx_version}")
+}
 
 processResources {
     inputs.property "version", project.version
@@ -101,48 +112,6 @@ jar {
     // add the license file at the root of the jar
     from('LICENSE') {
         rename {"${it}_${this.archivesBaseName}"}
-    }
-    from {                         // add all the javafx third party dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.name.contains("flowless") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
-    from {                         // add all the javafx third party dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.name.contains("richtextfx") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
-    from {                         // add all the javafx third party dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.name.contains("undo") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
-    from {                         // add all the javafx third party dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.name.contains("wellbehaved") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
-    from {                        // add all the javafx third party dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.name.contains("reactfx") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
-    }
-    from {                        // add all the openai api dependencies into the mod jar
-        configurations.compileClasspath.findAll() {
-            it.properties.toString().contains("openai") && it.name.endsWith(".jar")
-        }.collect {
-            zipTree(it)
-        }
     }
 }
 

@@ -17,9 +17,20 @@ import org.fxmisc.richtext.CodeArea;
 import java.awt.Desktop;
 import java.io.File;
 
+/**
+ * The context menu for the code area
+ * */
 public class CodeEditContextMenu extends ContextMenu {
 
+    /**
+     * The code area
+     * */
     public CodeArea codeArea;
+
+    /**
+     * The constructor
+     * @param codeArea the target code area
+     * */
     public CodeEditContextMenu(CodeArea codeArea) {
         super();
         this.codeArea = codeArea;

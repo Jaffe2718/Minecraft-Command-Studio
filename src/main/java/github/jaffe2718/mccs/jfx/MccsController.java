@@ -5,7 +5,6 @@ import github.jaffe2718.mccs.jfx.unit.CmdExecutor;
 import github.jaffe2718.mccs.jfx.unit.font.MessageLogHighlighter;
 import github.jaffe2718.mccs.jfx.unit.font.MinecraftSyntaxHighlighter;
 import github.jaffe2718.mccs.jfx.unit.PathNodeItem;
-import github.jaffe2718.mccs.jfx.unit.prompt.AISuggestionsRegister;
 import github.jaffe2718.mccs.jfx.unit.prompt.CommandPromptRegister;
 import github.jaffe2718.mccs.jfx.unit.widget.AlertFactory;
 import github.jaffe2718.mccs.jfx.unit.widget.CodeEditContextMenu;
@@ -23,6 +22,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -36,6 +36,8 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.*;
@@ -46,44 +48,79 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * the controller of the mccs IDE
+ * */
 public class MccsController implements Initializable {
 
-    public Popup findPopup = PopupFactory.createFindPopup();
-    public Popup replacePopup = PopupFactory.createReplacePopup();
-    //-----------------------------------------------------------//
-    @FXML public BorderPane root;        // Main Window
-    @FXML   public MenuBar mainMenuBar;    // Menu Bar
-    @FXML   public ToolBar topToolBar;
-    @FXML       public ComboBox<String> runModeComboBox;
-    @FXML       public Button runButton;
-    @FXML   public TabPane leftTabPane;
-    @FXML       public Tab fileExplorerTab;
-    @FXML           public TreeView<PathNodeItem> fileTreeView;
-    @FXML               public ContextMenu fileTreeContextMenu;
-    @FXML                   public MenuItem openMenuItem;
-    @FXML                   public Menu newMenu;
-    @FXML                       public MenuItem newFileMenuItem;
-    @FXML                       public MenuItem newDirectoryMenuItem;
-    @FXML                   public Menu refactorMenu;
-    @FXML                       public MenuItem renameMenuItem;
-    @FXML                       public MenuItem copyToMenuItem;
-    @FXML                       public MenuItem moveToMenuItem;
-    @FXML                   public MenuItem deleteMenuItem;
-    @FXML                   public MenuItem openInExplorerMenuItem;
-    @FXML   public TabPane rightTabPane;
-    @FXML       public Tab chatGPTTab;
-    @FXML           public VBox chatGPTVBox;                             // Chat GPT Container
-    @FXML               public Button chatClearButton;                   // Clear the chat log and the chat input
-    @FXML               public ChoiceBox<String> gptModelChoiceBox;  // Select the GPT model
-    @FXML               public VBox chatMsgVBox;                         // Chat log, add new message in label format
-    @FXML               public TextArea chatTextArea;                    // Chat input
+    private PrintStream out;
 
-    // @FXML      public Tab toolsTab;
+    /**
+     * the popup of find
+     * */
+    public Popup findPopup = PopupFactory.createFindPopup();
+
+    /**
+     * the popup of replace
+     * */
+    public Popup replacePopup = PopupFactory.createReplacePopup();
+
+    //-----------------------------------------------------------//
+    /***/
+    @FXML public BorderPane root;                           // Main Window
+    /***/
+    @FXML   public MenuBar mainMenuBar;                     // Menu Bar
+    /***/
+    @FXML   public ToolBar topToolBar;
+    /***/
+    @FXML       public ComboBox<String> runModeComboBox;
+    /***/
+    @FXML       public Button runButton;
+    /***/
+    @FXML   public TabPane leftTabPane;
+    /***/
+    @FXML       public Tab fileExplorerTab;
+    /***/
+    @FXML           public TreeView<PathNodeItem> fileTreeView;
+    /***/
+    @FXML               public ContextMenu fileTreeContextMenu;
+    /***/
+    @FXML                   public MenuItem openMenuItem;
+    /***/
+    @FXML                   public Menu newMenu;
+    /***/
+    @FXML                       public MenuItem newFileMenuItem;
+    /***/
+    @FXML                       public MenuItem newDirectoryMenuItem;
+    /***/
+    @FXML                   public Menu refactorMenu;
+    /***/
+    @FXML                       public MenuItem renameMenuItem;
+    /***/
+    @FXML                       public MenuItem copyToMenuItem;
+    /***/
+    @FXML                       public MenuItem moveToMenuItem;
+    /***/
+    @FXML                   public MenuItem deleteMenuItem;
+    /***/
+    @FXML                   public MenuItem openInExplorerMenuItem;
+    /***/
+    @FXML   public TabPane rightTabPane;
+    /***/
+    @FXML           public VBox mcCmdTabVBox;
+    /***/
+    @FXML           public VBox sysCmdTabVBox;
+    /***/
     @FXML           public VBox toolsTabVBox;
+    /***/
     @FXML   public TabPane codeTabPane;
+    /***/
     @FXML   public VBox bottomVBox;
+    /***/
     @FXML      public ToolBar outToolBar;
+    /***/
     @FXML           public Button buttonHideShow;
+    /***/
     @FXML      public CodeArea outLogCodeArea;
 
 
@@ -126,9 +163,9 @@ public class MccsController implements Initializable {
         fileTreeView.setVisible(true);
         runModeComboBox.getItems().addAll("Single Line", "Script", "Selection", "Loop", "Selection Loop");
         runModeComboBox.getSelectionModel().select(0);
-
-        this.initChatGPTTab();
         this.initToolsTab();
+        this.initMcCmdTab();
+        this.initSysConsoleTab();
     }
 
     /**
@@ -189,15 +226,68 @@ public class MccsController implements Initializable {
         toolsTabVBox.getChildren().addAll(toolsLabel, mcNetButton, mcWikiButton, gamerGeeksButton);
     }
 
-    private void initChatGPTTab() {
-        this.gptModelChoiceBox.getItems().addAll("GPT-3", "GPT-3.5-turbo", "GPT-4");
-        this.gptModelChoiceBox.getSelectionModel().select(0);
+    /**
+     * Init the mc cmd tab<br>
+     * Add the mc cmd to the tab<br>
+     * */
+    private void initMcCmdTab() {
+        // add a text area to the tab
+        TextArea mcCmdTabTextArea = new TextArea();
+        mcCmdTabTextArea.setPrefWidth(250);
+        mcCmdTabTextArea.setPrefHeight(250);
+        mcCmdTabTextArea.widthProperty().addListener((observable, oldValue, newValue) -> mcCmdTabTextArea.setPrefWidth(newValue.doubleValue()));
+        mcCmdTabTextArea.heightProperty().addListener((observable, oldValue, newValue) -> mcCmdTabTextArea.setPrefHeight(newValue.doubleValue() + 80));
+        mcCmdTabTextArea.editableProperty().set(false);
+        mcCmdTabTextArea.setWrapText(true);
+        mcCmdTabTextArea.setStyle("-fx-background-color: #F0F0F0;");
+        mcCmdTabVBox.getChildren().add(mcCmdTabTextArea);
+        // add a textField to the tab as input
+        TextField mcCmdTabTextField = new TextField();
+        mcCmdTabTextField.setPrefWidth(250);
+        mcCmdTabTextField.widthProperty().addListener((observable, oldValue, newValue) -> mcCmdTabTextField.setPrefWidth(newValue.doubleValue()));
+        mcCmdTabTextField.setOnAction(event -> {
+            CmdExecutor.executeMcShell(mcCmdTabTextArea, mcCmdTabTextField);
+            event.consume();
+        });
+        // set prompt text
+        mcCmdTabTextField.setPromptText("Input the Minecraft command here & press Enter to execute");
+        mcCmdTabVBox.getChildren().add(mcCmdTabTextField);
+        // do not focus on the tap mcCmdTabTextField for the first time
+        mcCmdTabTextField.setFocusTraversable(false);
+    }
+
+    /**
+     * Init the system console tab<br>
+     * Add the system console to the tab<br>
+     * */
+    private void initSysConsoleTab() {
+        // add a text area to the tab
+        TextArea sysConsoleTabTextArea = new TextArea();
+        sysConsoleTabTextArea.setPrefWidth(250);
+        sysConsoleTabTextArea.setPrefHeight(250);
+        sysConsoleTabTextArea.widthProperty().addListener((observable, oldValue, newValue) -> sysConsoleTabTextArea.setPrefWidth(newValue.doubleValue()));
+        sysConsoleTabTextArea.heightProperty().addListener((observable, oldValue, newValue) -> sysConsoleTabTextArea.setPrefHeight(newValue.doubleValue() + 80));
+        sysConsoleTabTextArea.editableProperty().set(false);
+        sysConsoleTabTextArea.setWrapText(true);
+        sysConsoleTabTextArea.setStyle("-fx-background-color: #F0F0F0;");
+        sysCmdTabVBox.getChildren().add(sysConsoleTabTextArea);
+        // add a textField to the tab as input
+        TextField sysConsoleTabTextField = new TextField();
+        sysConsoleTabTextField.setPrefWidth(250);
+        sysConsoleTabTextField.widthProperty().addListener((observable, oldValue, newValue) -> sysConsoleTabTextField.setPrefWidth(newValue.doubleValue()));
+        sysConsoleTabTextField.setPromptText("Input the system command here & press Enter to execute");
+        sysConsoleTabTextField.setOnAction(event -> {
+            CmdExecutor.executeSysCmd(sysConsoleTabTextArea, sysConsoleTabTextField);
+            event.consume();
+        });
+        sysCmdTabVBox.getChildren().add(sysConsoleTabTextField);
     }
 
     /**
      * view the file tree
+     * @param mouseEvent the mouse event
      * */
-    public void getOnMouseClickFileTreeView(MouseEvent mouseEvent) {
+    public void getOnMouseClickFileTreeView(@NotNull MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {      //Left click
             if (mouseEvent.getClickCount() == 1) {   // single click, show the file tree
                 TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();
@@ -224,7 +314,6 @@ public class MccsController implements Initializable {
                     MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);             // apply syntax highlighter
                     cmdCodeArea.replaceText(0, 0, readFileToString(currentPathNode.getFile().getAbsolutePath()));  // read file to code area
                     CommandPromptRegister.addPromptTo(cmdCodeArea);                              // add command prompt
-                    AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);                       // add AI suggestions
                     AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
                     anchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
                     AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -243,8 +332,9 @@ public class MccsController implements Initializable {
 
     /**
      * show/hide the log area
+     * @param mouseEvent the mouse event
      */
-    public void onMouseClickedButtonHideShow(MouseEvent mouseEvent) {
+    public void onMouseClickedButtonHideShow(@NotNull MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
             if (buttonHideShow.getText().equals("Show")) {
                 buttonHideShow.setText("Hide");
@@ -256,10 +346,7 @@ public class MccsController implements Initializable {
         }
     }
 
-    /**
-     * read file to string
-     */
-    public String readFileToString(String fileName) {
+    private @Nullable String readFileToString(String fileName) {
         String encoding = "UTF-8";
         File file = new File(fileName);
         long filelength = file.length();
@@ -324,8 +411,9 @@ public class MccsController implements Initializable {
 
     /**
      * Release or take back the left tab pane
+     * @param mouseEvent the mouse event
      * */
-    public void getLeftTabPaneOnClicked(MouseEvent mouseEvent) {
+    public void getLeftTabPaneOnClicked(@NotNull MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
             if (leftTabPane.getPrefWidth()>30) {
                 leftTabPane.setPrefWidth(30);
@@ -338,8 +426,9 @@ public class MccsController implements Initializable {
     /**
      * Right Tab Pane on Clicked<br/>
      * show/hide/switch tab
+     * @param mouseEvent the mouse event
      * */
-    public void getRightTabPaneOnClicked(MouseEvent mouseEvent) {
+    public void getRightTabPaneOnClicked(@NotNull MouseEvent mouseEvent) {
         // if the user click the right tab pane at the gap between tabs or the tab pane itself or mouse button is not primary, do nothing
         // only the user click the right 30px width area of the tab, the tab will be expanded or collapsed
         if (!mouseEvent.getButton().equals(MouseButton.PRIMARY) || mouseEvent.getX()<rightTabPane.getWidth()-30) {
@@ -368,6 +457,7 @@ public class MccsController implements Initializable {
 
     /**
      * When the user click the "Run" button, execute the minecraft command in the code area or terminate the thread
+     * @param event the action event
      * */
     public void getRunButtonOnAction(ActionEvent event) {
         // get the code area from tab > anchor pane > code area
@@ -400,6 +490,7 @@ public class MccsController implements Initializable {
      * Open file menu item event
      * open a file and create a new tab to edit the file when click the "Open" menu item
      * expand the tree node when click the directory node
+     * @param event the action event
      * */
     public void getOnOpenMenuItemAction(Event event) { // create a new tab to edit the file
         TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();
@@ -424,7 +515,6 @@ public class MccsController implements Initializable {
             MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);             // apply syntax highlighter
             cmdCodeArea.replaceText(0, 0, readFileToString(currentPathNode.getFile().getAbsolutePath()));  // read file to code area
             CommandPromptRegister.addPromptTo(cmdCodeArea);
-            AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);
             AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
             anchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
             AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -441,9 +531,10 @@ public class MccsController implements Initializable {
     }
 
     /**
-     * show a dialog to create a new file & create a new tab to edit the file & create a new node in the tree view for the new file
+     * show a dialog to create a new file and create a new tab to edit the file and create a new node in the tree view for the new file
+     * @param event the event
      * */
-    public void getOnNewFileMenuItemAction(ActionEvent event) {
+    public void getOnNewFileMenuItemAction(@NotNull ActionEvent event) {
         TextInputDialog newFileDialog = new TextInputDialog();
         // set icon
         Stage newFileDialogStage = (Stage) newFileDialog.getDialogPane().getScene().getWindow();
@@ -476,7 +567,6 @@ public class MccsController implements Initializable {
                 cmdCodeArea.setContextMenu(new CodeEditContextMenu(cmdCodeArea));            // add context menu
                 MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);             // apply syntax highlighter
                 CommandPromptRegister.addPromptTo(cmdCodeArea);                              // add command prompt
-                AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);                       // add AI suggestions
                 AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
                 anchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
                 AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -505,9 +595,10 @@ public class MccsController implements Initializable {
     }
 
     /**
-     * show a dialog to create a new directory & create a new node in the tree view for the new directory
+     * show a dialog to create a new directory and create a new node in the tree view for the new directory
+     * @param event the event
      * */
-    public void getOnNewDirectoryItemAction(ActionEvent event) {
+    public void getOnNewDirectoryItemAction(@NotNull ActionEvent event) {
         TextInputDialog newDirectoryDialog = new TextInputDialog();
         // set icon
         Stage newDirectoryDialogStage = (Stage) newDirectoryDialog.getDialogPane().getScene().getWindow();
@@ -550,6 +641,7 @@ public class MccsController implements Initializable {
 
     /**
      * open the file in the explorer
+     * @param event the event
      * */
     public void getOpenInExplorerMenuItemAction(ActionEvent event) {
         TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();  // get the selected node
@@ -575,8 +667,9 @@ public class MccsController implements Initializable {
      * make sure the user want to delete the file or directory by showing a dialog first
      * if the user click "OK", delete the file or directory
      * after deleting the file or directory, remove the node from the tree view
+     * @param event the event
      * */
-    public void getOnDeleteMenuItemAction(ActionEvent event) {
+    public void getOnDeleteMenuItemAction(@NotNull ActionEvent event) {
         TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();  // get the selected node
         PathNodeItem currentPathNode = currentTreeNode.getValue();      // get the selected node's value
         Alert deleteAlert = AlertFactory.createAlert(Alert.AlertType.CONFIRMATION,
@@ -617,8 +710,9 @@ public class MccsController implements Initializable {
 
     /**
      * Rename the file and update the tree view
+     * @param event the event
      * */
-    public void getOnRenameMenuItemAction(ActionEvent event) {
+    public void getOnRenameMenuItemAction(@NotNull ActionEvent event) {
         TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();  // get the selected node
         PathNodeItem currentPathNode = currentTreeNode.getValue();      // get the selected node's value
         TextInputDialog renameDialog = new TextInputDialog(currentPathNode.getFile().getName());
@@ -654,6 +748,7 @@ public class MccsController implements Initializable {
     /**
      * copy the file or directory
      * show a dialog to let the user choose the destination directory
+     * @param event the event
      * */
     public void getOnCopyToMenuItemAction(ActionEvent event) {
         TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();  // get the selected node
@@ -732,6 +827,7 @@ public class MccsController implements Initializable {
      * else move the file or directory with following steps: <br>
      * 1. move the file or directory to the destination directory; <br>
      * 2. refresh the parent node of the source directory or file; <br>
+     * @param event the event
      * */
     public void getOnMoveToMenuItemAction(ActionEvent event) {
         TreeItem<PathNodeItem> currentTreeNode = this.fileTreeView.getSelectionModel().getSelectedItem();  // get the selected node
@@ -805,15 +901,15 @@ public class MccsController implements Initializable {
     /**
      * when the user clicks the "New File" menu item, create a new file and add it to the tabpane
      * create a new codearea and add it to the tabpane, as a cache for the new file
+     * @param event the event
      * */
-    public void getOnMainNewFileAction(ActionEvent event) {
+    public void getOnMainNewFileAction(@NotNull ActionEvent event) {
         // create a new CodeArea
         CodeArea cmdCodeArea = new CodeArea();                                        // create a new codearea
         cmdCodeArea.setParagraphGraphicFactory(LineNumberFactory.get(cmdCodeArea));   // set the codearea's paragraph graphic factory
         cmdCodeArea.setContextMenu(new CodeEditContextMenu(cmdCodeArea));                                // set the codearea's context menu
         MinecraftSyntaxHighlighter.applySyntaxHighlighting(cmdCodeArea);              // apply syntax highlighting to the codearea
         CommandPromptRegister.addPromptTo(cmdCodeArea);                               // add command prompt to the codearea
-        AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);                        // add AI suggestions to the codearea
         // create a new AnchorPane
         AnchorPane newAnchorPane = new AnchorPane(cmdCodeArea);                       // create a new anchorpane
         newAnchorPane.prefWidthProperty().bind(codeTabPane.layoutXProperty());
@@ -886,6 +982,7 @@ public class MccsController implements Initializable {
 
     /**
      * when the user clicks the "New Directory" menu item, show a dialog to choose the path to create the new directory
+     * @param event the action event
      * */
     public void getOnMainNewDirAction(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -938,6 +1035,7 @@ public class MccsController implements Initializable {
      * when the user clicks the "Open" menu item, show a file chooser to let the user choose the file to open
      * if the user chooses a file, check whether the path is valid, then open the file in a new tab
      * else if the user cancels the file chooser, do nothing
+     * @param event the action event
      * */
     public void getOnMainOpenAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -988,7 +1086,6 @@ public class MccsController implements Initializable {
                 return;
             }
             CommandPromptRegister.addPromptTo(cmdCodeArea);           // add the command prompt to the code area
-            AISuggestionsRegister.addAISuggestionsTo(cmdCodeArea);    // add the AI suggestions to the code area
             AnchorPane anchorPane = new AnchorPane(cmdCodeArea);
             AnchorPane.setTopAnchor(cmdCodeArea, 0.0);
             AnchorPane.setBottomAnchor(cmdCodeArea, 0.0);
@@ -1032,6 +1129,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * save the current tab's code to the file
+     * @param event the event
+     * */
     public void getOnMainSaveAction(ActionEvent event) {
         // check if the current tab has code area
         Tab currentTab = codeTabPane.getSelectionModel().getSelectedItem();
@@ -1083,6 +1184,10 @@ public class MccsController implements Initializable {
         }
     }
 
+    /**
+     * save the current tab's code as a new file
+     * @param event the event
+     * */
     public void getOnMainSaveAsAction(ActionEvent event) {
         // check if the current tab has code area
         AnchorPane currentTabContent = (AnchorPane) codeTabPane.getSelectionModel().getSelectedItem().getContent();
@@ -1138,10 +1243,15 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * close the current tab
+     * @param event the event
+     * */
     public void getOnMainCloseAction(ActionEvent event) {
         // check if the current tab has code area
         try {
             CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel().getSelectedItem().getContent()).getChildren().get(0);
+            assert cmdCodeArea != null;
         } catch (Exception e) {
             Alert noCodeAreaAlert = AlertFactory.createAlert(Alert.AlertType.ERROR,
                     "Minecraft Command Studio", "Error: No Code Area", "There is no code area in the current tab!");
@@ -1164,6 +1274,10 @@ public class MccsController implements Initializable {
         }
     }
 
+    /**
+     * exit
+     * @param event the event
+     * */
     public void getOnMainExitAction(ActionEvent event) {
         if (MccsApplication.stage.isShowing()) {
             MccsApplication.stage.hide();
@@ -1171,7 +1285,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
-
+    /**
+     * select all
+     * @param event the event
+     * */
     public void editSelectAll(ActionEvent event) {
         CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel()
                 .getSelectedItem().getContent()).getChildren().get(0);
@@ -1181,6 +1298,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * copy selected text
+     * @param event the event
+     * */
     public void editCopy(ActionEvent event) {
         CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel()
                 .getSelectedItem()
@@ -1192,6 +1313,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * cut selected text
+     * @param event the event
+     * */
     public void editCut(ActionEvent event) {
         CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel()
                 .getSelectedItem()
@@ -1203,6 +1328,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * paste text
+     * @param event the event
+     * */
     public void editPaste(ActionEvent event) {
         CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel()
                 .getSelectedItem()
@@ -1214,6 +1343,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * find text
+     * @param event the event
+     * */
     public void editFind(ActionEvent event) {
         if (!findPopup.isShowing()) {
             // get the current code area
@@ -1229,6 +1362,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * replace text
+     * @param event the event
+     * */
     public void editReplace(ActionEvent event) {
         if (!replacePopup.isShowing()) {
             // get the current code area
@@ -1244,6 +1381,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * undo
+     * @param event the event
+     * */
     public void editUndo(ActionEvent event) {     // undo the last operation
         CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel()
                 .getSelectedItem()
@@ -1255,6 +1396,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * redo
+     * @param event the event
+     * */
     public void editRedo(ActionEvent event) {
         CodeArea cmdCodeArea = (CodeArea) ((AnchorPane) codeTabPane.getSelectionModel()
                 .getSelectedItem()
@@ -1266,6 +1411,10 @@ public class MccsController implements Initializable {
         event.consume();
     }
 
+    /**
+     * show the about dialog
+     * @param event the event
+     * */
     public void onMainAboutAction(ActionEvent event) {
         Alert aboutAlert = AlertFactory.createAlert(Alert.AlertType.INFORMATION,
                 "Minecraft Command Studio", "About Minecraft Command Studio", """

@@ -3,6 +3,7 @@ package github.jaffe2718.mccs.jfx.unit.font;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,8 +28,9 @@ public abstract class MessageLogHighlighter {
 
     /**
      * Add the highlighter to the target CodeArea
+     * @param target the CodeArea to be highlighted
      * */
-    public static void applyHighlighting(CodeArea target) {
+    public static void applyHighlighting(@NotNull CodeArea target) {
         target.textProperty().addListener((obs, oldText, newText) -> {
             // System.out.println("oldText: " + oldText);
             target.setStyleSpans(0, computeHighlighting(newText));

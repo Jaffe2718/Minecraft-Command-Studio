@@ -22,9 +22,19 @@ import org.fxmisc.richtext.CodeArea;
  * */
 public abstract class EventHandler {
 
+    /**
+     * The last command that the player input in the chat screen.
+     * */
     public static String lastCommand = "";
+
+    /**
+     * The suggestor of the chat screen.
+     * */
     public static ChatInputSuggestor suggestor = null;
 
+    /**
+     * register the event handler
+     * */
     public static void register() {
         ClientTickEvents.START_CLIENT_TICK.register(EventHandler::onStartClientTick);
         ClientTickEvents.END_CLIENT_TICK.register(EventHandler::onEndClientTick);

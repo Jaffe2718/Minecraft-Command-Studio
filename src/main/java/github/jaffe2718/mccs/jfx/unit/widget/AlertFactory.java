@@ -8,6 +8,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -25,7 +26,9 @@ public interface AlertFactory {
      * @param header the header of the alert <br>
      * @param content the content of the alert <br>
      * @param buttons the buttons of the alert, default is OK <br>
+     * @return the alert <br>
      * */
+    @NotNull
     static Alert createAlert(Alert.AlertType type, @Nullable String title, String header, String content, @Nullable ButtonType... buttons) {
         Alert alert;
         if (buttons != null) {

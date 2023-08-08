@@ -12,34 +12,19 @@
    </opaqueInsets>
    <right>
        <TabPane fx:id="rightTabPane" onMouseClicked="#getRightTabPaneOnClicked" prefHeight="339.0" prefWidth="250.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-           <Tab fx:id="chatGPTTab" text="ChatGPT">
+           <Tab text="MC Console">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                    <VBox fx:id="mcCmdTabVBox" alignment="BOTTOM_CENTER" layoutX="74.0" layoutY="91.0" prefHeight="200.0" prefWidth="100.0" style="-fx-spacing: 75;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                </AnchorPane>
+           </Tab>
+           <Tab text="System Console">
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
-                   <children>
-                       <VBox fx:id="chatGPTVBox" layoutX="21.0" layoutY="92.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                               <ToolBar prefHeight="23.0" prefWidth="221.0">
-                                   <items>
-                                       <Button fx:id="chatClearButton" mnemonicParsing="false" text="Clear" />
-                                       <ChoiceBox fx:id="gptModelChoiceBox" prefHeight="23.0" prefWidth="158.0" />
-                                   </items>
-                               </ToolBar>
-                            <VBox fx:id="chatMsgVBox" prefHeight="223.0" prefWidth="221.0" VBox.vgrow="ALWAYS" />
-                                <HBox prefHeight="64.0" prefWidth="221.0" VBox.vgrow="SOMETIMES">
-                                    <children>
-                                        <TextArea fx:id="chatTextArea" prefHeight="38.0" prefWidth="178.0" HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" prefHeight="64.0" prefWidth="47.0" text="Send" textAlignment="CENTER" />
-                                    </children>
-                                </HBox>
-                           </children>
-                       </VBox>
-                   </children>
+                   <VBox fx:id="sysCmdTabVBox" alignment="BOTTOM_CENTER" layoutX="74.0" layoutY="91.0" prefHeight="200.0" prefWidth="100.0" style="-fx-spacing: 75;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </AnchorPane>
            </Tab>
            <Tab text="Tools">
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
-                   <children>
-                      <VBox fx:id="toolsTabVBox" alignment="CENTER" layoutX="74.0" layoutY="91.0" prefHeight="200.0" prefWidth="100.0" style="-fx-spacing: 75;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                   </children>
+                   <VBox fx:id="toolsTabVBox" alignment="CENTER" layoutX="74.0" layoutY="91.0" prefHeight="200.0" prefWidth="100.0" style="-fx-spacing: 75;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </AnchorPane>
            </Tab>
        </TabPane>
@@ -121,32 +106,23 @@
    <center>
        <TabPane fx:id="codeTabPane" prefHeight="339.0" prefWidth="441.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER">
               <Tab id="Start" text="Start">
-                <AnchorPane>
-               <children>
-                  <Label layoutX="29.0" layoutY="155.0" text="Press Alt+F3 to obtain AI suggestions" textFill="#f60000">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="29.0" layoutY="14.0" text="Minecraft Command Studio (MCCS)" textFill="#0d00ff">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="141.0" layoutY="41.0" text="Start Guide" textFill="#0c7400">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="29.0" layoutY="76.0" prefHeight="35.0" prefWidth="291.0" text="Remember to enter the OpenAI API Key in the mod menu settings" textFill="#a100db" wrapText="true" />
-                  <Label layoutX="29.0" layoutY="120.0" prefHeight="21.0" prefWidth="325.0" text="You can also select AI model in the mod menu settings" textFill="#ce7100" wrapText="true" />
-                  <Button layoutX="320.0" layoutY="263.0" mnemonicParsing="false" onAction="#getOnMainNewFileAction" prefHeight="22.0" prefWidth="45.0" style="-fx-background-color: #E0E0E0;" text="Try" textAlignment="CENTER" textFill="#00AA55">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-                  <Label layoutX="29.0" layoutY="206.0" prefHeight="36.0" prefWidth="320.0" text="1.0.0-rc.3 : ChatGPT chat function has not been implemented yet! " textFill="#007798" wrapText="true" />
-               </children></AnchorPane>
+                  <AnchorPane>
+                      <Label layoutX="29.0" layoutY="14.0" text="Minecraft Command Studio (MCCS)" textFill="#0d00ff">
+                          <font>
+                              <Font size="20.0" />
+                          </font>
+                      </Label>
+                      <Label layoutX="141.0" layoutY="41.0" text="Start Guide" textFill="#0c7400">
+                          <font>
+                              <Font size="18.0" />
+                          </font>
+                      </Label>
+                      <Button layoutX="320.0" layoutY="263.0" mnemonicParsing="false" onAction="#getOnMainNewFileAction" prefHeight="22.0" prefWidth="45.0" style="-fx-background-color: #E0E0E0;" text="Try" textAlignment="CENTER" textFill="#00AA55">
+                          <font>
+                              <Font size="16.0" />
+                          </font>
+                      </Button>
+                  </AnchorPane>
               </Tab>
        </TabPane>
    </center>
