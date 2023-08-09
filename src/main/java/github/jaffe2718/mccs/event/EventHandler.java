@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.fxmisc.richtext.CodeArea;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class is used to handle Minecraft game events.<br>
@@ -82,20 +83,19 @@ public abstract class EventHandler {
      * To check if {@link EventHandler#lastCommand} is not empty.
      * if it is not empty, switch the screen to get the command.
      */
-    private static void onStartClientTick(MinecraftClient client) {
+    private static void onStartClientTick(@NotNull MinecraftClient client) {
         if (client.player != null && !lastCommand.isEmpty()) {
             ChatScreen chatScreen = new ChatScreen("");
             Screen currentScreen = client.currentScreen;
             client.setScreen(chatScreen);
             suggestor = ((ChatScreenMixin)chatScreen).getChatInputSuggestor();
             suggestor.refresh();
-            if (lastCommand.startsWith("/")) {
-                // tap the command to the chat field one by one
-                for (int i = 0; i < lastCommand.length(); i++) {
-                    ((ChatScreenMixin) chatScreen).getChatField().write(""+lastCommand.charAt(i));
-                }
-            } else {
-                ((ChatScreenMixin) chatScreen).getChatField().write("/" + lastCommand);
+            if (!lastCommand.startsWith("/")) {
+                ((ChatScreenMixin) chatScreen).getChatField().write("/"); // + lastCommand);
+            }
+            // tap the command to the chat field one by one
+            for (int i = 0; i < lastCommand.length(); i++) {
+                ((ChatScreenMixin) chatScreen).getChatField().write(String.valueOf(lastCommand.charAt(i)));
             }
             lastCommand = "";                                  // clear the lastCommand
             client.setScreen(currentScreen);                   // switch back to the screen before

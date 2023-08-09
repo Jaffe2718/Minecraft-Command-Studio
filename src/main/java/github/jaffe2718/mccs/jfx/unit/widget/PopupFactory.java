@@ -232,8 +232,13 @@ public interface PopupFactory {
                 // match the last word in the codeArea from the cursor position to the start of the row of the cursor
                 Matcher matcher = CommandPromptRegister.LAST_EXPRESSION_PATTERN.matcher(codeArea.getText(0, codeArea.getCaretPosition()));
                 if (matcher.find()) {
-                    // replace the last word with the prompt
-                    codeArea.replaceText(matcher.start(), matcher.end(), label.getText());
+                    if (!"[]".contains(label.getText())) {  // not '[' or ']'
+                        // replace the last word with the prompt
+                        codeArea.replaceText(matcher.start(), matcher.end(), label.getText());
+                    } else {
+                        // insert it before at the cursor position
+                        codeArea.insertText(codeArea.getCaretPosition(), label.getText());
+                    }
                 }
                 // hide the promptPopup after the prompt is inserted into the codeArea
                 promptPopup.hide();
@@ -256,13 +261,15 @@ public interface PopupFactory {
                 Matcher matcher = CommandPromptRegister.LAST_EXPRESSION_PATTERN.matcher(codeArea.getText(0, codeArea.getCaretPosition()));
                 if (matcher.find()) {
                     // replace the last word with the prompt
-                    codeArea.replaceText(matcher.start(),
-                            matcher.end(),
-                            ((Label) vBox.getChildren().get(vBox.getUserData() instanceof Integer int_? int_ : 0))
-                                    .getText());
-                    // then unable the \n or \t inserted into the codeArea
-                    event.consume();
+                    Label label = (Label) vBox.getChildren().get(vBox.getUserData() instanceof Integer int_? int_ : 0);
+                    if (!"[]".contains(label.getText())) {
+                        codeArea.replaceText(matcher.start(), matcher.end(), label.getText());
+                    } else {
+                        codeArea.insertText(codeArea.getCaretPosition(), label.getText());
+                    }
                 }
+                // then unable the \n or \t inserted into the codeArea
+                event.consume();
                 promptPopup.hide();  // hide the promptPopup after the prompt is inserted into the codeArea
             } else if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {    // up or down key pressed
                 vBox.setUserData((Integer) vBox.getUserData() + (event.getCode() == KeyCode.UP ? -1 : 1));

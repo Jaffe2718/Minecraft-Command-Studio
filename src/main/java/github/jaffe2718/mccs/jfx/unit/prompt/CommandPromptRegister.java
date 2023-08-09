@@ -25,7 +25,8 @@ public interface CommandPromptRegister {
     /**
      * The pattern of the last word of the row text
      * */
-    Pattern LAST_EXPRESSION_PATTERN = Pattern.compile("[^/ \\n]*[\\da-zA-Z]+$");
+    Pattern LAST_EXPRESSION_PATTERN = Pattern.compile("[^/ \\n\\[=]*[\\da-zA-Z@]+$");
+            //Pattern.compile("[^/ \\n]*[\\da-zA-Z]+$");
 
     /**
      * Add a command prompt to the codeArea
@@ -68,7 +69,7 @@ public interface CommandPromptRegister {
      * this will cause the game to crash, java.lang.IllegalStateException: Rendersystem called from wrong thread
      * So just set EventHandler.lastCommand = input, and in {@link github.jaffe2718.mccs.event.EventHandler} will switch the screen
      * */
-    private static List<String> getCommandSuggestions(String input) {  // unfinished
+    private static List<String> getCommandSuggestions(String input) {
         EventHandler.lastCommand = input;
         List<Suggestion> suggestionList = new ArrayList<>();
         for (int i=0 ; i<3 ; i++) {                           // wait for the command suggestions
