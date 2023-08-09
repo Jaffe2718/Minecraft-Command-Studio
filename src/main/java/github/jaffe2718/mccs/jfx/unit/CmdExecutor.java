@@ -14,7 +14,9 @@ import org.fxmisc.richtext.CodeArea;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 /**
  * To execute the command in the code area<br/>
@@ -38,6 +40,10 @@ public class CmdExecutor {
      * the flag to kill the thread
      * */
     public static boolean killThread = true;  // the flag to kill the thread
+
+    private static Process sysShellProcess = null;
+
+    private static Thread sysOutThread = null;
 
     /**
      * Execute the command in the code area
@@ -97,24 +103,55 @@ public class CmdExecutor {
     public static void executeSysCmd(@NotNull TextArea terminal, @NotNull TextField cmdSrc) {
         String cmd = cmdSrc.getText();
         terminal.appendText("\r\n>> " + cmd + "\r\n");
-        try {
-            Thread td = new Thread(() -> {
-                try {
-                    Process p = Runtime.getRuntime().exec(cmd);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        String finalLine = line;
-                        Platform.runLater(() -> terminal.appendText(finalLine + "\r\n"));
+        if (sysOutThread == null) {           // start a new thread to write system shell log
+            sysOutThread = new Thread(() -> {
+                while (true) {
+                    try {
+                        if (sysShellProcess!=null && sysShellProcess.isAlive()) {
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(sysShellProcess.getInputStream()));
+                            String line;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                String finalLine = line;
+                                Platform.runLater(() -> terminal.appendText(finalLine + "\r\n"));
+                            }
+                        }
+                    } catch (Exception e) {
+                        continue;
                     }
-                } catch (Exception e) {
-                    Platform.runLater(() -> terminal.appendText(">> " + e.getMessage() + "\r\n"));
                 }
             });
-            td.start();
-        } catch (Exception e) {
-            terminal.appendText(">> " + e.getMessage() + "\r\n");
+            sysOutThread.start();
         }
+        if (sysShellProcess == null) {       // start a system shell process without command at the background
+            var sysName = System.getProperty("os.name").toLowerCase();
+            try {
+                if (sysName.contains("win")) {
+                    sysShellProcess = Runtime.getRuntime().exec("cmd.exe");
+                } else if (sysName.contains("mac")) {
+                    sysShellProcess = Runtime.getRuntime().exec("bash");
+                } else {
+                    sysShellProcess = Runtime.getRuntime().exec("sh");
+                }
+            } catch (Exception e) {
+                Platform.runLater(() -> terminal.appendText(">> " + e.getMessage() + "\r\n"));
+            }
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assert sysShellProcess != null && sysShellProcess.isAlive();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sysShellProcess.getOutputStream()));
+                    System.out.println(cmd);        // TODO: remove this line
+                    writer.write(cmd);
+                    writer.newLine();
+                    writer.flush();
+                }
+                catch (Exception e) {
+                    Platform.runLater(() -> terminal.appendText(">> " + e.getMessage() + "\r\n"));
+                }
+            }
+        }).start();
         cmdSrc.clear();
     }
 
