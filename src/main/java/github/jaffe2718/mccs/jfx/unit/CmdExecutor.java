@@ -142,7 +142,7 @@ public class CmdExecutor {
                 try {
                     assert sysShellProcess != null && sysShellProcess.isAlive();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sysShellProcess.getOutputStream()));
-                    System.out.println(cmd);        // TODO: remove this line
+                    System.out.println(cmd);
                     writer.write(cmd);
                     writer.newLine();
                     writer.flush();
