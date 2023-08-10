@@ -13,10 +13,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import org.fxmisc.richtext.CodeArea;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 /**
  * To execute the command in the code area<br/>
@@ -103,26 +100,7 @@ public class CmdExecutor {
     public static void executeSysCmd(@NotNull TextArea terminal, @NotNull TextField cmdSrc) {
         String cmd = cmdSrc.getText();
         terminal.appendText("\r\n>> " + cmd + "\r\n");
-        if (sysOutThread == null) {           // start a new thread to write system shell log
-            sysOutThread = new Thread(() -> {
-                while (true) {
-                    try {
-                        if (sysShellProcess!=null && sysShellProcess.isAlive()) {
-                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(sysShellProcess.getInputStream()));
-                            String line;
-                            while ((line = bufferedReader.readLine()) != null) {
-                                String finalLine = line;
-                                Platform.runLater(() -> terminal.appendText(finalLine + "\r\n"));
-                            }
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
-                }
-            });
-            sysOutThread.start();
-        }
-        if (sysShellProcess == null) {       // start a system shell process without command at the background
+        if (sysShellProcess == null || !sysShellProcess.isAlive()) {       // start a system shell process without command at the background
             var sysName = System.getProperty("os.name").toLowerCase();
             try {
                 if (sysName.contains("win")) {
@@ -136,13 +114,42 @@ public class CmdExecutor {
                 Platform.runLater(() -> terminal.appendText(">> " + e.getMessage() + "\r\n"));
             }
         }
+        if (sysOutThread == null) {           // start a new thread to write system shell log
+            sysOutThread = new Thread(() -> {
+                BufferedReader br = null;
+                BufferedReader errBr = null;
+                while (true) {
+                    if (br == null) {
+                        br = new BufferedReader(new InputStreamReader(sysShellProcess.getInputStream()));
+                    }
+                    if (errBr == null) {
+                        errBr = new BufferedReader(new InputStreamReader(sysShellProcess.getErrorStream()));
+                    }
+                    try {
+                        assert sysShellProcess != null;
+                        assert br.ready() && errBr.ready();
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            String finalLine = line;
+                            Platform.runLater(() -> terminal.appendText(finalLine + "\r\n"));
+                        }
+                        while ((line = errBr.readLine()) != null) {
+                            String finalLine = line;
+                            Platform.runLater(() -> terminal.appendText(finalLine + "\r\n"));
+                        }
+                    } catch (AssertionError | IOException e) {
+                        Platform.runLater(() -> terminal.appendText(">> " + e.getMessage() + "\r\n"));
+                    }
+                }
+            });
+            sysOutThread.start();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     assert sysShellProcess != null && sysShellProcess.isAlive();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sysShellProcess.getOutputStream()));
-                    System.out.println(cmd);
                     writer.write(cmd);
                     writer.newLine();
                     writer.flush();
@@ -216,13 +223,12 @@ public class CmdExecutor {
             try {
                 Thread.sleep(MccsConfig.scriptInterval);
                 cmd = removeComments(cmd);
-                if (cmd.isEmpty()) {
-                    continue;
-                }
-                else if (cmd.startsWith("/")) {
-                    executor.networkHandler.sendCommand(cmd.substring(1).stripTrailing());
-                } else {
-                    executor.networkHandler.sendCommand(cmd.stripTrailing());
+                if (!cmd.isEmpty()) {
+                    if (cmd.startsWith("/")) {
+                        executor.networkHandler.sendCommand(cmd.substring(1).stripTrailing());
+                    } else {
+                        executor.networkHandler.sendCommand(cmd.stripTrailing());
+                    }
                 }
             } catch (InterruptedException ie) {     // if the thread is killed, stop the execution
                 Platform.runLater(() -> {
